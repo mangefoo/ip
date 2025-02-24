@@ -31,3 +31,4 @@ COPY --from=builder /go/bin/app /app
 USER appuser
 
 ENTRYPOINT ["/app"]
+
