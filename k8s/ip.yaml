@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip
+spec:
+  ports:
+  - name: http
+    targetPort: 8080
+    port: 80
+  selector:
+    app: ip
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ip
+  template:
+    metadata:
+      labels:
+        app: ip
+    spec:
+      containers:
+      - name: ip-container
+        image: $DOCKER_IMAGE
+        imagePullPolicy: Always
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: ip
+  namespace: default
+spec:
+  rules:
+    - host: ip.int.mindphaser.se
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ip
+                port:
+                  number: 8080
